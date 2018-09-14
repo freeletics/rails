@@ -439,7 +439,7 @@ module Rails
     # the Rails master key, which is either taken from <tt>ENV["RAILS_MASTER_KEY"]</tt> or from loading
     # +config/master.key+.
     def credentials
-      @credentials ||= encrypted("config/credentials.yml.enc")
+      @credentials ||= encrypted(config.credentials.content_path, key_path: config.credentials.key_path)
     end
 
     # Shorthand to decrypt any encrypted configurations or files.

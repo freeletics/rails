@@ -17,7 +17,7 @@ module Rails
                     :session_options, :time_zone, :reload_classes_only_on_change,
                     :beginning_of_week, :filter_redirect, :x, :enable_dependency_loading,
                     :read_encrypted_secrets, :log_level, :content_security_policy_report_only,
-                    :content_security_policy_nonce_generator, :require_master_key
+                    :content_security_policy_nonce_generator, :require_master_key, :credentials
 
       attr_reader :encoding, :api_only, :loaded_config_version
 
@@ -59,6 +59,9 @@ module Rails
         @content_security_policy_report_only     = false
         @content_security_policy_nonce_generator = nil
         @require_master_key                      = false
+        @credentials                             = ActiveSupport::OrderedOptions.new
+        @credentials.content_path                = root.join("config", "credentials.yml.enc")
+        @credentials.key_path                    = root.join("config", "master.key")
         @loaded_config_version                   = nil
       end
 
@@ -116,6 +119,9 @@ module Rails
           end
         when "6.0"
           load_defaults "5.2"
+
+          credentials.content_path = root.join("config", "credentials", "#{Rails.env}.yml.enc")
+          credentials.key_path     = root.join("config", "credentials", "#{Rails.env}.key")
 
           if respond_to?(:action_view)
             action_view.default_enforce_utf8 = false
